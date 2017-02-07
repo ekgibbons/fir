@@ -260,6 +260,40 @@ def MinPhase(h):
 
     return hmp
     
+def msinc(numSamples,order):
+    """
+    Creates an "m-sinc" filter for RF pulse design.  This is essentially 
+    a Hamming windowed sinc.  Order is the number of zero-crossings.
     
+    Arguments:
+    - `numSamples`: number of samples
+    - `order`: number of zero-crossings
+    """
+
+    # This is John's code.  I don't really like it. 
+    # x = np.arange(-numSamples/2,(numSamples-1)/2+1,1)/float(numSamples/2)
+    # sinc = np.sin(order*2*np.pi*x+0.00001)/(order*2*np.pi*x+0.00001)
+    # msinc = sinc*(0.54 + 0.46*np.cos(np.pi*x))
+    # msinc *= 4.*order/numSamples
+
+    t = np.linspace(-1,1,numSamples)
+    msinc = np.sinc(order/2*t)
+    msinc *= hamming(numSamples)
+    msinc /= np.sum(msinc)
+    
+    return msinc
+
+def hamming(N):
+    """
+    Creates a Hamming window
+    
+    Arguments:
+    - `t`: samples, ranging from [-1 to 1]
+    """
+    n = np.arange(0,N)
+    
+    w = 0.54 - 0.46*np.cos(2*np.pi*n/(N-1))
+
+    return w
 
     
